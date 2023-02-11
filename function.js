@@ -1,4 +1,5 @@
 function CreateContentsTag(
+  No,
   PosName,
   img,
   DoRoMyung,
@@ -7,31 +8,31 @@ function CreateContentsTag(
   latitude,
   longitude
 ) {
-  var content = `<div class="wrap"> + 
-          <div class="info"> + 
-              <div class="title"> + 
-                  ${PosName} + 
-                  <div class="close" onclick="closeOverlay()" title="닫기"></div> + 
-              </div> + 
-              <div class="body"> + 
-                  <div class="img"> +
-                      <img src="${img}" width="73" height="70"> +
-                 </div> + 
-                  <div class="desc"> + 
-                      <div class="ellipsis">${DoRoMyung}</div> + 
-                      <div class="jibun ellipsis">${JiBun}</div> + 
-                      <div><a href="${HomePage}" target="_blank" class="link">홈페이지</a></div> + 
-                  </div> + 
-              </div> + 
-          </div> +    
+  var content = `<div class="wrap">
+          <div class="info">
+              <div class="title">
+                  ${PosName} 
+                  <div class="close" id="info_close${No}" title="닫기"></div> 
+              </div> 
+              <div class="body"> 
+                  <div class="img">
+                      <img src="${img}" width="75" height="70">
+                 </div> 
+                  <div class="desc"> 
+                      <div class="ellipsis">${DoRoMyung}</div> 
+                      <div class="jibun ellipsis">${JiBun}</div> 
+                      <div><a href="${HomePage}" target="_blank" class="link">홈페이지</a></div> 
+                  </div> 
+              </div> 
+          </div>   
       </div>`;
   return content;
 }
 
-// 커스텀 오버레이를 닫기 위해 호출되는 함수입니다
-function closeOverlay() {
-  customOverlay.setMap(null);
-}
+// // 커스텀 오버레이를 닫기 위해 호출되는 함수입니다
+// function closeOverlay() {
+//   customOverlay.setMap(null);
+// }
 
 function CustomOverlay(contents, latitude, longitude) {
   // 커스텀 오버레이에 표시할 내용입니다

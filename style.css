@@ -119,12 +119,12 @@ body {
   position: absolute;
   left: 0;
   bottom: 40px;
-  width: 400px;
-  height: 250px;
+  width: 286px;
+  height: 120px;
   margin-left: -144px;
   text-align: left;
   overflow: hidden;
-  font-size: 10px;
+  font-size: 12px;
   font-family: "Malgun Gothic", dotum, "돋움", sans-serif;
   line-height: 1.5;
 }
@@ -133,8 +133,8 @@ body {
   margin: 0;
 }
 .wrap .info {
-  width: 400px;/*286px;*/
-  height: 200px;/* 120px; */
+  width: 286px;/*286px;*/
+  height: 120px;/* 120px; */
   border-radius: 5px;
   font-size: 10px;
   border-bottom: 2px solid #ccc;

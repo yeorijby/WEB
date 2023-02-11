@@ -7,7 +7,6 @@ function CreateContentsTag(
   latitude,
   longitude
 ) {
-
   var content = `<div class="wrap"> + 
           <div class="info"> + 
               <div class="title"> + 
@@ -27,6 +26,11 @@ function CreateContentsTag(
           </div> +    
       </div>`;
   return content;
+}
+
+// 커스텀 오버레이를 닫기 위해 호출되는 함수입니다
+function closeOverlay() {
+  customOverlay.setMap(null);
 }
 
 function CustomOverlay(contents, latitude, longitude) {

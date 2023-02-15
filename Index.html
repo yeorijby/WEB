@@ -152,6 +152,7 @@
         let fetchArray = [];      // 최종 주소록 배열
         let myArray = [];         // 단일 행(학교당) 주소 정보
         let schoolMem = [];       // 학교당 멤버(배열인자:학교명, 값:학생명 누적)
+        let strName = "";
             
         // SCHOOL_RK_DIV_NM        
         xhr.open('GET', url + queryParams);
@@ -171,28 +172,71 @@
             let cntTotalANC = jsonData_ANC.length;
             console.log(cntTotalANC);
 
+          //   // 2. 갯수만큼 반복해서 찾아본다.
+          //   for(let l = 0 ; l < cntTotalANC ; l++)
+          //   {
+          //     for(let j=0;j<cntTotalSchool;j++)
+          //     {
+          //       if (obj[j].FACLT_NM != jsonData_ANC[l]['School']) 
+          //         continue;
+              
+          //         myArray.length = 0;
+
+          //         myArray.push(obj[j].FACLT_NM);
+          //         myArray.push('이미지 없음');
+          //         myArray.push(obj[j].REFINE_LOTNO_ADDR);
+          //         myArray.push(obj[j].REFINE_ROADNM_ADDR);
+          //         myArray.push('홈페이지 없음');
+          //         myArray.push(obj[j].REFINE_WGS84_LAT);
+          //         myArray.push(obj[j].REFINE_WGS84_LOGT);
+
+          //         if (schoolMem[`${obj[j].FACLT_NM}`] == null)
+          //           schoolMem[`${obj[j].FACLT_NM}`] = jsonData_ANC[l]['Name'];
+          //         else
+          //           schoolMem[`${obj[j].FACLT_NM}`] += (", " + jsonData_ANC[l]['Name']);
+          //     }
+
+          //     if (myArray.length != 0)
+          //       fetchArray.push(myArray);
+          //   }
+
+          // });
             // 2. 갯수만큼 반복해서 찾아본다.
-            for(let l = 0 ; l < cntTotalANC ; l++)
+            for(let j=0;j<cntTotalSchool;j++)
             {
-              for(let j=0;j<cntTotalSchool;j++)
+              for(let l = 0 ; l < cntTotalANC ; l++)
               {
                 if (obj[j].FACLT_NM != jsonData_ANC[l]['School']) 
                   continue;
               
-                  myArray.length = 0;
+                myArray.length = 0;
 
-                  myArray.push(obj[j].FACLT_NM);
-                  myArray.push('이미지 없음');
-                  myArray.push(obj[j].REFINE_LOTNO_ADDR);
-                  myArray.push(obj[j].REFINE_ROADNM_ADDR);
-                  myArray.push('홈페이지 없음');
-                  myArray.push(obj[j].REFINE_WGS84_LAT);
-                  myArray.push(obj[j].REFINE_WGS84_LOGT);
+                myArray.push(obj[j].FACLT_NM);
+                myArray.push('이미지 없음');
+                myArray.push(obj[j].REFINE_LOTNO_ADDR);
+                myArray.push(obj[j].REFINE_ROADNM_ADDR);
+                myArray.push('홈페이지 없음');
+                myArray.push(obj[j].REFINE_WGS84_LAT);
+                myArray.push(obj[j].REFINE_WGS84_LOGT);
 
-                  if (schoolMem[`${obj[j].FACLT_NM}`] == null)
-                    schoolMem[`${obj[j].FACLT_NM}`] = jsonData_ANC[l]['Name'];
+                // {
+                //   "school": "운천중학교",
+                //   "Name": "이태민, 김하닮, 전주역, 이유빈, 아브리아나, 이다민"
+                // }
+
+                // let myObject = {"name": "John", "age": 30};
+                // let myArray = [{"name": "John"}];
+                // myArray.push({"name": "Jane"});
+
+                if (schoolMem.school == obj[j].FACLT_NM)
+                {
+                  if (schoolMem.name == null)
+                    strName = jsonData_ANC[l]['Name'];
                   else
-                    schoolMem[`${obj[j].FACLT_NM}`] += (", " + jsonData_ANC[l]['Name']);
+                    strName += (", " + jsonData_ANC[l]['Name']);
+                }
+
+                schoolMem = {"school": obj[j].FACLT_NM, "name": 30}
               }
 
               if (myArray.length != 0)
@@ -202,21 +246,18 @@
           });
 
           console.log(schoolMem);
-          
+
           let nFetchArrCnt = fetchArray.length;
           let nSchoolMemCnt = schoolMem.length;
 
-          //console.log(nFetchArrCnt);
-          //console.log(nSchoolMemCnt);
+          console.log(nFetchArrCnt);
+          console.log(nSchoolMemCnt);
 
-          if (nFetchArrCnt == nSchoolMemCnt)
-          {
-            for (let k = 0 ; k < nFetchArrCnt ; k++)
-            {
-              // 학교명 배열에 다가 
-              fetchArray[k].push(schoolMem[`${fetchArray[k][0]}`]); 
-            }
-          }
+          schoolMem.forEach((element) => {
+
+
+       });
+          
 
       
       // var arrLocationInfo = [

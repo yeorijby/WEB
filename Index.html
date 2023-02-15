@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
+    <meta charset="Utf-8" />
     <title>
       지도에 열고/닫기 가능한 정보 마크 올리기 - 배열을 하드코딩으로 넣었음 -
       받아 올수만 있으면 될듯!
@@ -45,8 +45,74 @@
         /></span>
       </div>
     </div>
-
     <script src="function.js"></script>
+    <script>
+      //중학교 용
+      function GetSchoolInfoByAPI(...ANC_SchoolData){
+        // let jsonData;
+        // fetch("./addr.json")
+        // .then(response => {
+        //   return response.json();
+        // })
+        // .then(jsondata => {
+        //   jsonData = jsondata;
+        //   // console.log(jsonData);
+        // });
+        
+        console.log(ANC_SchoolData);
+        
+        
+        var xhr = new XMLHttpRequest();
+        var jsonResponse;
+        var jsonData_E_M_H_ShoolInfo;
+        var api_key = "3c3198ef4877402c9361a69a6c47398b";
+        var url = 'https://openapi.gg.go.kr/MskulM'; /*URL*/
+        var queryParams = '?' + encodeURIComponent('Key') + '='+api_key; /*Service Key*/
+        queryParams += '&' + encodeURIComponent('type') + '=' + encodeURIComponent('json'); /**/
+        queryParams += '&' + encodeURIComponent('pIndex') + '=' + encodeURIComponent(1); /**/
+        queryParams += '&' + encodeURIComponent('pSize') + '=' + encodeURIComponent(1000); /**/
+
+
+
+        // SCHOOL_RK_DIV_NM        
+        xhr.open('GET', url + queryParams);
+        fetch(url + queryParams)
+          .then(response => {
+            return response.json();
+          })
+          .then(jsondata => {
+            jsonData_E_M_H_ShoolInfo = jsondata;
+            console.log(jsonData_E_M_H_ShoolInfo);
+
+            // 1. 가져온 값의 갯수를 찍어본다.
+            let obj = jsonData_E_M_H_ShoolInfo.MskulM[1].row;
+            let cntTotalSchool = obj.length;
+            console.log(cntTotalSchool);
+
+            let cntTotalANC = ANC_SchoolData.length;
+            console.log(cntTotalANC);
+
+            // 2. 갯수만큼 반복해서 찾아본다.
+            let fetchArray; 
+            for(let i = 0 ; i < cntTotalANC ; i++)
+            {
+              for(let j=0;j<cntTotalSchool;j++)
+              {
+                if (obj[j].FACLT_NM != ANC_SchoolData[j].['School']) 
+                  continue;
+              
+                fetchArray = obj[i];
+
+              }
+
+            }
+            // 3. 같은 학교에 대한 정보를 다른 변수에 저장한다. 
+          });
+        //xhr.send(''); 
+        //alert(jsonData);
+        return jsonData;
+      }
+    </script>
     <script>
       var mapContainer = document.getElementById("map"), // 지도를 표시할 div
         mapOption = {
@@ -56,32 +122,128 @@
 
       var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
+      var string_csv;
       //CustomOverlay("카카오라카이구래쌌노", 33.450701, 126.570667);
 
-      var arrLocationInfo = [
-        [
-          "카카오 스페이스닷원",
-          "https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/community/83cd8a98017a00001.png",
-          "제주특별자치도 제주시 첨단로 242",
-          "(우) 63309 (지번) 영평동 2181",
-          "https://www.kakaocorp.com/main",
-          33.450701,
-          126.570667,
-        ],
-        [
-          "전기차 배터리 산업화 센터",
-          "https://lh5.googleusercontent.com/p/AF1QipOm59iilr97JMp8vG6UCFjdzD0JaLO1a_og1UOm=w426-h240-k-no",
-          "제주특별자치도 제주시 첨단로 241",
-          "(우) 63309 (지번) 영평동 2181", // 안바꿈
-          "https://www.kakaocorp.com/main", // 안바꿈
-          33.450725,
-          126.57222,
-        ],
-      ];
+      let jsonData_ANC;
+        fetch("./addr.json")
+        .then(response => {
+          return response.json();
+        })
+        .then(jsondata => {
+          jsonData_ANC = jsondata;
+          //console.log(jsonData);
+        });
+        
+        console.log(jsonData_ANC);
+
+      //var fetchedSchoolData = GetSchoolInfoByAPI(jsonData);           // 경기교육지원청
+      //console.log(fetchedSchoolData);
+      var xhr = new XMLHttpRequest();
+        var jsonResponse;
+        var jsonData_E_M_H_ShoolInfo;
+        var api_key = "3c3198ef4877402c9361a69a6c47398b";
+        var url = 'https://openapi.gg.go.kr/MskulM'; /*URL*/
+        var queryParams = '?' + encodeURIComponent('Key') + '='+api_key; /*Service Key*/
+        queryParams += '&' + encodeURIComponent('type') + '=' + encodeURIComponent('json'); /**/
+        queryParams += '&' + encodeURIComponent('pIndex') + '=' + encodeURIComponent(1); /**/
+        queryParams += '&' + encodeURIComponent('pSize') + '=' + encodeURIComponent(1000); /**/
+
+        let fetchArray = [];      // 최종 주소록 배열
+        let myArray = [];         // 단일 행(학교당) 주소 정보
+        let schoolMem = [];       // 학교당 멤버(배열인자:학교명, 값:학생명 누적)
+            
+        // SCHOOL_RK_DIV_NM        
+        xhr.open('GET', url + queryParams);
+        fetch(url + queryParams)
+          .then(response => {
+            return response.json();
+          })
+          .then(jsondata => {
+            jsonData_E_M_H_ShoolInfo = jsondata;
+            console.log(jsonData_E_M_H_ShoolInfo);
+
+            // 1. 가져온 값의 갯수를 찍어본다.
+            let obj = jsonData_E_M_H_ShoolInfo.MskulM[1].row;
+            let cntTotalSchool = obj.length;
+            console.log(cntTotalSchool);
+
+            let cntTotalANC = jsonData_ANC.length;
+            console.log(cntTotalANC);
+
+            // 2. 갯수만큼 반복해서 찾아본다.
+            for(let l = 0 ; l < cntTotalANC ; l++)
+            {
+              for(let j=0;j<cntTotalSchool;j++)
+              {
+                if (obj[j].FACLT_NM != jsonData_ANC[l]['School']) 
+                  continue;
+              
+                  myArray.length = 0;
+
+                  myArray.push(obj[j].FACLT_NM);
+                  myArray.push('이미지 없음');
+                  myArray.push(obj[j].REFINE_LOTNO_ADDR);
+                  myArray.push(obj[j].REFINE_ROADNM_ADDR);
+                  myArray.push('홈페이지 없음');
+                  myArray.push(obj[j].REFINE_WGS84_LAT);
+                  myArray.push(obj[j].REFINE_WGS84_LOGT);
+
+                  if (schoolMem[`${obj[j].FACLT_NM}`] == null)
+                    schoolMem[`${obj[j].FACLT_NM}`] = jsonData_ANC[l]['Name'];
+                  else
+                    schoolMem[`${obj[j].FACLT_NM}`] += (", " + jsonData_ANC[l]['Name']);
+              }
+
+              if (myArray.length != 0)
+                fetchArray.push(myArray);
+            }
+
+          });
+
+          console.log(schoolMem);
+          
+          let nFetchArrCnt = fetchArray.length;
+          let nSchoolMemCnt = schoolMem.length;
+
+          //console.log(nFetchArrCnt);
+          //console.log(nSchoolMemCnt);
+
+          if (nFetchArrCnt == nSchoolMemCnt)
+          {
+            for (let k = 0 ; k < nFetchArrCnt ; k++)
+            {
+              // 학교명 배열에 다가 
+              fetchArray[k].push(schoolMem[`${fetchArray[k][0]}`]); 
+            }
+          }
+
+      
+      // var arrLocationInfo = [
+      //   [
+      //     "카카오 스페이스닷원",
+      //     "https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/community/83cd8a98017a00001.png",    // 없애자
+      //     "제주특별자치도 제주시 첨단로 242",
+      //     "(우) 63309 (지번) 영평동 2181",
+      //     "https://www.kakaocorp.com/main",
+      //     33.450701,
+      //     126.570667,
+      //   ],
+      //   [
+      //     "전기차 배터리 산업화 센터",
+      //     "https://lh5.googleusercontent.com/p/AF1QipOm59iilr97JMp8vG6UCFjdzD0JaLO1a_og1UOm=w426-h240-k-no",
+      //     "제주특별자치도 제주시 첨단로 241",
+      //     "(우) 63309 (지번) 영평동 2181", // 안바꿈
+      //     "https://www.kakaocorp.com/main", // 안바꿈
+      //     33.450725,
+      //     126.57222,
+      //   ],
+      // ];
+      console.log(fetchArray);
 
       var i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
 
-      arrLocationInfo.forEach((element) => {
+      fetchArray.forEach((element) => {
         // console.log(element);
 
         var latitude = element[5];
@@ -103,8 +265,9 @@
           element[2], // "제주특별자치도 제주시 첨단로 242",
           element[3], // "(우) 63309 (지번) 영평동 2181",
           element[4], // "https://www.kakaocorp.com/main",
-          latitude,
-          longitude
+          // latitude,
+          // longitude,
+          element[7]
         );
 
         // 커스텀 오버레이를 생성합니다

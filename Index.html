@@ -47,101 +47,10 @@
     </div>
     <script src="function.js"></script>
     <script>
-      //중학교 용
-      function GetSchoolInfoByAPI(...ANC_SchoolData){
-        // let jsonData;
-        // fetch("./addr.json")
-        // .then(response => {
-        //   return response.json();
-        // })
-        // .then(jsondata => {
-        //   jsonData = jsondata;
-        //   // console.log(jsonData);
-        // });
-        
-        console.log(ANC_SchoolData);
-        
-        
-        var xhr = new XMLHttpRequest();
-        var jsonResponse;
-        var jsonData_E_M_H_ShoolInfo;
-        var api_key = "3c3198ef4877402c9361a69a6c47398b";
-        var url = 'https://openapi.gg.go.kr/MskulM'; /*URL*/
-        var queryParams = '?' + encodeURIComponent('Key') + '='+api_key; /*Service Key*/
-        queryParams += '&' + encodeURIComponent('type') + '=' + encodeURIComponent('json'); /**/
-        queryParams += '&' + encodeURIComponent('pIndex') + '=' + encodeURIComponent(1); /**/
-        queryParams += '&' + encodeURIComponent('pSize') + '=' + encodeURIComponent(1000); /**/
-
-
-
-        // SCHOOL_RK_DIV_NM        
-        xhr.open('GET', url + queryParams);
-        fetch(url + queryParams)
-          .then(response => {
-            return response.json();
-          })
-          .then(jsondata => {
-            jsonData_E_M_H_ShoolInfo = jsondata;
-            console.log(jsonData_E_M_H_ShoolInfo);
-
-            // 1. 가져온 값의 갯수를 찍어본다.
-            let obj = jsonData_E_M_H_ShoolInfo.MskulM[1].row;
-            let cntTotalSchool = obj.length;
-            console.log(cntTotalSchool);
-
-            let cntTotalANC = ANC_SchoolData.length;
-            console.log(cntTotalANC);
-
-            // 2. 갯수만큼 반복해서 찾아본다.
-            let fetchArray; 
-            for(let i = 0 ; i < cntTotalANC ; i++)
-            {
-              for(let j=0;j<cntTotalSchool;j++)
-              {
-                if (obj[j].FACLT_NM != ANC_SchoolData[j].['School']) 
-                  continue;
-              
-                fetchArray = obj[i];
-
-              }
-
-            }
-            // 3. 같은 학교에 대한 정보를 다른 변수에 저장한다. 
-          });
-        //xhr.send(''); 
-        //alert(jsonData);
-        return jsonData;
-      }
-    </script>
-    <script>
-      var mapContainer = document.getElementById("map"), // 지도를 표시할 div
-        mapOption = {
-          center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-          level: 3, // 지도의 확대 레벨
-        };
-
-      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-      var string_csv;
       //CustomOverlay("카카오라카이구래쌌노", 33.450701, 126.570667);
 
-      let jsonData_ANC;
-        fetch("./addr.json")
-        .then(response => {
-          return response.json();
-        })
-        .then(jsondata => {
-          jsonData_ANC = jsondata;
-          //console.log(jsonData);
-        });
-        
-        console.log(jsonData_ANC);
-
-      //var fetchedSchoolData = GetSchoolInfoByAPI(jsonData);           // 경기교육지원청
-      //console.log(fetchedSchoolData);
       var xhr = new XMLHttpRequest();
         var jsonResponse;
-        var jsonData_E_M_H_ShoolInfo;
         var api_key = "3c3198ef4877402c9361a69a6c47398b";
         var url = 'https://openapi.gg.go.kr/MskulM'; /*URL*/
         var queryParams = '?' + encodeURIComponent('Key') + '='+api_key; /*Service Key*/
@@ -151,16 +60,21 @@
 
         let fetchArray = [];      // 최종 주소록 배열
         let myArray = [];         // 단일 행(학교당) 주소 정보
-        let schoolMem = [];       // 학교당 멤버(배열인자:학교명, 값:학생명 누적)
+        let schoolMem = {};       // 학교당 멤버(배열인자:학교명, 값:학생명 누적) // json
+        let schoolMemArray = [];  // 학교당 멤버(배열인자:학교명, 값:학생명 누적) // json의 배열
         let strName = "";
-            
+        let nANC_Count = 0;      // 귀찮아서 콘솔로그 보기 편하라고 
+        let nSelSchoolANC_First;
+        let jsonData_E_M_H_ShoolInfo;
+        let jsonData_ANC;
+
         // SCHOOL_RK_DIV_NM        
         xhr.open('GET', url + queryParams);
         fetch(url + queryParams)
-          .then(response => {
+          .then((response) => {
             return response.json();
           })
-          .then(jsondata => {
+          .then((jsondata) => {
             jsonData_E_M_H_ShoolInfo = jsondata;
             console.log(jsonData_E_M_H_ShoolInfo);
 
@@ -168,95 +82,94 @@
             let obj = jsonData_E_M_H_ShoolInfo.MskulM[1].row;
             let cntTotalSchool = obj.length;
             console.log(cntTotalSchool);
+          })
+          .then(fetch("./addr.json"))
+          .then((response) => {
+            return response.json();
+          })
+          .then((jsondata) => {
+            jsonData_ANC = jsondata;
+              //console.log(cntTotalSchool);
+            console.log(jsonData_ANC);
 
             let cntTotalANC = jsonData_ANC.length;
             console.log(cntTotalANC);
 
-          //   // 2. 갯수만큼 반복해서 찾아본다.
-          //   for(let l = 0 ; l < cntTotalANC ; l++)
-          //   {
-          //     for(let j=0;j<cntTotalSchool;j++)
-          //     {
-          //       if (obj[j].FACLT_NM != jsonData_ANC[l]['School']) 
-          //         continue;
-              
-          //         myArray.length = 0;
-
-          //         myArray.push(obj[j].FACLT_NM);
-          //         myArray.push('이미지 없음');
-          //         myArray.push(obj[j].REFINE_LOTNO_ADDR);
-          //         myArray.push(obj[j].REFINE_ROADNM_ADDR);
-          //         myArray.push('홈페이지 없음');
-          //         myArray.push(obj[j].REFINE_WGS84_LAT);
-          //         myArray.push(obj[j].REFINE_WGS84_LOGT);
-
-          //         if (schoolMem[`${obj[j].FACLT_NM}`] == null)
-          //           schoolMem[`${obj[j].FACLT_NM}`] = jsonData_ANC[l]['Name'];
-          //         else
-          //           schoolMem[`${obj[j].FACLT_NM}`] += (", " + jsonData_ANC[l]['Name']);
-          //     }
-
-          //     if (myArray.length != 0)
-          //       fetchArray.push(myArray);
-          //   }
-
-          // });
             // 2. 갯수만큼 반복해서 찾아본다.
-            for(let j=0;j<cntTotalSchool;j++)
+            for(let j=0;j<cntTotalSchool;j++)         // 전체학교
             {
-              for(let l = 0 ; l < cntTotalANC ; l++)
+              nSelSchoolANC_First = 0;
+              strName = "";
+              for(let l = 0 ; l < cntTotalANC ; l++)  // ANC 학교
               {
                 if (obj[j].FACLT_NM != jsonData_ANC[l]['School']) 
                   continue;
-              
-                myArray.length = 0;
 
-                myArray.push(obj[j].FACLT_NM);
-                myArray.push('이미지 없음');
-                myArray.push(obj[j].REFINE_LOTNO_ADDR);
-                myArray.push(obj[j].REFINE_ROADNM_ADDR);
-                myArray.push('홈페이지 없음');
-                myArray.push(obj[j].REFINE_WGS84_LAT);
-                myArray.push(obj[j].REFINE_WGS84_LOGT);
+                // myArray.length = 0;
 
-                // {
-                //   "school": "운천중학교",
-                //   "Name": "이태민, 김하닮, 전주역, 이유빈, 아브리아나, 이다민"
-                // }
+                // if (schoolMem[`${obj[j].FACLT_NM}`] == null)
+                //   schoolMem[`${obj[j].FACLT_NM}`] = jsonData_ANC[l]['Name'];
+                // else
+                //   schoolMem[`${obj[j].FACLT_NM}`] += (", " + jsonData_ANC[l]['Name']);
 
-                // let myObject = {"name": "John", "age": 30};
-                // let myArray = [{"name": "John"}];
-                // myArray.push({"name": "Jane"});
-
-                if (schoolMem.school == obj[j].FACLT_NM)
+                // 1. 처음 들어온것인지 확인한다.
+                if (nSelSchoolANC_First == 0)
                 {
-                  if (schoolMem.name == null)
-                    strName = jsonData_ANC[l]['Name'];
-                  else
-                    strName += (", " + jsonData_ANC[l]['Name']);
+                  // 1.1 처음 들어왔다면 - 해당 학생을 변수에 담는다.
+                  if (nANC_Count > 0 && strName != "")
+                    fetchArray[nANC_Count-1].push(strName);
+
+                  myArray.length = 0;
+                  
+                  myArray.push(obj[j].FACLT_NM);
+                  myArray.push('이미지 없음'+l);
+                  myArray.push(obj[j].REFINE_LOTNO_ADDR);
+                  myArray.push(obj[j].REFINE_ROADNM_ADDR);
+                  myArray.push('홈페이지 없음'+l);
+                  myArray.push(obj[j].REFINE_WGS84_LAT);
+                  myArray.push(obj[j].REFINE_WGS84_LOGT);
+
+                  fetchArray.push(myArray);
+
+                  strName = jsonData_ANC[l]['Name'];
+                  nANC_Count++;
                 }
-
-                schoolMem = {"school": obj[j].FACLT_NM, "name": 30}
+                else 
+                {
+                  // 1.2 처음 들어온것이 아니라면 - 학생을 누적시킨다. 
+                  strName += (", " + jsonData_ANC[l]['Name']);
+                }
               }
+            } 
+          })
+          .catch((error) => console.log("error : ", error));
 
-              if (myArray.length != 0)
-                fetchArray.push(myArray);
-            }
+          console.log(nANC_Count);
+          console.log(fetchArray);
 
-          });
+          // let nFetchArrCnt = fetchArray.length;
+          // let nSchoolMemCnt = schoolMem.length;
 
-          console.log(schoolMem);
+          // console.log(nFetchArrCnt);
+          // console.log(nANC_Count);
 
-          let nFetchArrCnt = fetchArray.length;
-          let nSchoolMemCnt = schoolMem.length;
+          // for(let m = 0 ; m < nANC_Count ; m++)
+          // {
+          //   for(let n = 0;n<fetchArray.length;n++)
+          //   {
+          //     if (schoolMem[m].school != fetchArray[n][0])
+          //       contiue;
 
-          console.log(nFetchArrCnt);
-          console.log(nSchoolMemCnt);
+          //     fetchArray[n].push(schoolMem[m].name);
+          //   }
+          // }
 
-          schoolMem.forEach((element) => {
+          //console.log(fetchArray);
 
+          // schoolMem.forEach((element) => {
+            
 
-       });
+          // });
           
 
       
@@ -280,9 +193,18 @@
       //     126.57222,
       //   ],
       // ];
-      console.log(fetchArray);
+      //console.log(fetchArray);
 
       var i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
+
+
+      // var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+      //   mapOption = {
+      //     center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+      //     level: 3, // 지도의 확대 레벨
+      //   };
+
+      // var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
       fetchArray.forEach((element) => {
         // console.log(element);

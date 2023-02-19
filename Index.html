@@ -70,6 +70,12 @@
 
         // SCHOOL_RK_DIV_NM        
         xhr.open('GET', url + queryParams);
+
+        let response = await fetch(url + queryParams); // 응답 헤더와 함께 이행됨
+        let result = await response.json(); // json 본문을 읽음
+
+        console.log(result);
+/*
         fetch(url + queryParams)
           .then((response) => {
             return response.json();
@@ -87,8 +93,8 @@
           .then((response) => {
             return response.json();
           })
-          .then((jsondata) => {
-            jsonData_ANC = jsondata;
+          .then((addrjsondata) => {
+            jsonData_ANC = addrjsondata;
               //console.log(cntTotalSchool);
             console.log(jsonData_ANC);
 
@@ -131,6 +137,8 @@
 
                   fetchArray.push(myArray);
 
+                  console.log(fetchArray);
+
                   strName = jsonData_ANC[l]['Name'];
                   nANC_Count++;
                 }
@@ -140,12 +148,15 @@
                   strName += (", " + jsonData_ANC[l]['Name']);
                 }
               }
+
+              if (nANC_Count > 0 && strName != "")
+                    fetchArray[nANC_Count].push(strName);
             } 
           })
           .catch((error) => console.log("error : ", error));
 
-          console.log(nANC_Count);
-          console.log(fetchArray);
+          //console.log(nANC_Count);
+          //console.log(fetchArray);
 
           // let nFetchArrCnt = fetchArray.length;
           // let nSchoolMemCnt = schoolMem.length;
@@ -171,7 +182,7 @@
 
           // });
           
-
+//*/
       
       // var arrLocationInfo = [
       //   [
@@ -198,13 +209,13 @@
       var i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
 
 
-      // var mapContainer = document.getElementById("map"), // 지도를 표시할 div
-      //   mapOption = {
-      //     center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-      //     level: 3, // 지도의 확대 레벨
-      //   };
+      var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+        mapOption = {
+          center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+          level: 3, // 지도의 확대 레벨
+        };
 
-      // var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
       fetchArray.forEach((element) => {
         // console.log(element);

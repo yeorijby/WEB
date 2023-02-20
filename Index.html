@@ -70,24 +70,6 @@
 
         // SCHOOL_RK_DIV_NM        url + queryParams
         xhr.open('GET', url + queryParams);
-        //fetch('https://openapi.gg.go.kr/MskulM?Key=3c3198ef4877402c9361a69a6c47398b&type=json&pIndex=1&pSize=1000')
-        // fetch(url + queryParams)
-        //   // .then(response => response.json())
-        //   .then((response) => {
-        //     return response.json();
-        //   })
-        //   .then(data => {
-        //     jsonData_E_M_H_ShoolInfo = data;
-        //     // for (let key in jsonData_E_M_H_ShoolInfo) {
-        //     //   console.log(`${key}: ${jsonData_E_M_H_ShoolInfo[key]}`);
-        //     // }
-
-        //     //jsonData_E_M_H_ShoolInfo['MskulM'][1]['row'][0]
-
-        //     console.log(jsonData_E_M_H_ShoolInfo); // obj 변수에 담긴 JSON 객체를 콘솔에 출력합니다.
-        //   })
-        //   .catch(error => console.error(error));
-
         
         fetch(url + queryParams)
         .then((response) => {
@@ -168,6 +150,8 @@
 
                   //fetchArray.push(myArray);
 
+                  console.log(fetchArray);
+
                   strName = jsonData_ANC[l]['Name'];
                   nANC_Count++;
                 }
@@ -188,8 +172,9 @@
           })
         })
         .catch((error) => console.log("error : ", error));
-//*/
-          //console.log(nANC_Count);
+
+
+//console.log(nANC_Count);
           //console.log(fetchArray);
 
           // let nFetchArrCnt = fetchArray.length;
@@ -216,7 +201,7 @@
 
           // });
           
-
+//*/
       
       // var arrLocationInfo = [
       //   [
@@ -243,13 +228,13 @@
       var i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
 
 
-      // var mapContainer = document.getElementById("map"), // 지도를 표시할 div
-      //   mapOption = {
-      //     center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-      //     level: 3, // 지도의 확대 레벨
-      //   };
+      var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+        mapOption = {
+          center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+          level: 3, // 지도의 확대 레벨
+        };
 
-      // var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
       fetchArray.forEach((element) => {
         // console.log(element);

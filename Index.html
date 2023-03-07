@@ -47,244 +47,268 @@
     </div>
     <script src="function.js"></script>
     <script>
-      //CustomOverlay("카카오라카이구래쌌노", 33.450701, 126.570667);
-
-      var xhr = new XMLHttpRequest();
-        var jsonResponse;
-        var api_key = "3c3198ef4877402c9361a69a6c47398b";
-        var url = 'https://openapi.gg.go.kr/MskulM'; /*URL*/
-        var queryParams = '?' + encodeURIComponent('Key') + '='+api_key; /*Service Key*/
-        queryParams += '&' + encodeURIComponent('type') + '=' + encodeURIComponent('json'); /**/
-        queryParams += '&' + encodeURIComponent('pIndex') + '=' + encodeURIComponent(1); /**/
-        queryParams += '&' + encodeURIComponent('pSize') + '=' + encodeURIComponent(1000); /**/
-
-        let fetchArray = [];      // 최종 주소록 배열
-        let myArray = [];         // 단일 행(학교당) 주소 정보
-        let schoolMem = {};       // 학교당 멤버(배열인자:학교명, 값:학생명 누적) // json
-        let schoolMemArray = [];  // 학교당 멤버(배열인자:학교명, 값:학생명 누적) // json의 배열
-        let strName = "";
-        let nANC_Count = 0;      // 귀찮아서 콘솔로그 보기 편하라고 
-        let nSelSchoolANC_First;
-        let jsonData_E_M_H_ShoolInfo;
-        let jsonData_ANC;
-
-        // SCHOOL_RK_DIV_NM        url + queryParams
-        xhr.open('GET', url + queryParams);
-        
-        fetch(url + queryParams)
-        .then((response) => {
-          return response.json();
-        })
-        .then((jsondata) => {
-          jsonData_E_M_H_ShoolInfo = jsondata;
-          console.log(jsonData_E_M_H_ShoolInfo);
-
-          // 1. 가져온 값의 갯수를 찍어본다.
-          let obj = jsonData_E_M_H_ShoolInfo['MskulM'][1]['row'];
-          let cntTotalSchool = obj.length;
-          console.log(cntTotalSchool);
-
-
-          fetch("./addr.json")
-          .then((response) => {
-            return response.json();
-          })
-          .then((jsondata) => {
-            jsonData_ANC = jsondata;
-            console.log("전체학교 : ", cntTotalSchool);
-            console.log("학생정보 : ", jsonData_ANC);
-
-            let cntTotalANC = jsonData_ANC.length;
-            console.log(cntTotalANC);
-
-            // 2. 갯수만큼 반복해서 찾아본다.
-            for(let j=0;j<cntTotalSchool;j++)         // 전체학교
-            {
-              nSelSchoolANC_First = 0;
-              strName = "";
-              myArray.length = 0;
-              for(let l = 0 ; l < cntTotalANC ; l++)  // ANC 학교
-              {
-                if (obj[j].FACLT_NM != jsonData_ANC[l]['School']) 
-                  continue;
-
-                  //myArray.length = 0;
-                // if (schoolMem[`${obj[j].FACLT_NM}`] == null)
-                //   schoolMem[`${obj[j].FACLT_NM}`] = jsonData_ANC[l]['Name'];
-                // else
-                //   schoolMem[`${obj[j].FACLT_NM}`] += (", " + jsonData_ANC[l]['Name']);
-
-                // 1. 처음 들어온것인지 확인한다.
-                if (nSelSchoolANC_First == 0)
-                {
-                  // 1.1 처음 들어왔다면 - 해당 학생을 변수에 담는다.
-                  if (nANC_Count > 0 && strName != "")
-                  {
-                    if (myArray.length != 0)
-                    {
-                      myArray.push(strName);
-
-                      console.log(`myArray.length = ${myArray.length} nANC_Count = ${nANC_Count} strName = ${strName} myArray= ${myArray}`);
-                      
-                      //console.log(myArray);
-                      fetchArray.push(myArray);
-                    }
-                    //fetchArray[nANC_Count-1].push(strName);
-
-                  //   // console.log("ANC_Count : ", nANC_Count);
-                  //   // console.log("strName : ", strName);
-                  }
-                    
-                  //console.log("ANC_Count : ", nANC_Count);
-                  //console.log("strName : ", strName);
-
-                  myArray.length = 0;
-                  
-                  myArray.push(obj[j].FACLT_NM);
-                  myArray.push('이미지 없음');
-                  myArray.push(obj[j].REFINE_LOTNO_ADDR);
-                  myArray.push(obj[j].REFINE_ROADNM_ADDR);
-                  myArray.push('홈페이지 없음');
-                  myArray.push(obj[j].REFINE_WGS84_LAT);
-                  myArray.push(obj[j].REFINE_WGS84_LOGT);
-
-                  //fetchArray.push(myArray);
-
-                  console.log(fetchArray);
-
-                  strName = jsonData_ANC[l]['Name'];
-                  nANC_Count++;
-                }
-                else 
-                {
-                  // 1.2 처음 들어온것이 아니라면 - 학생을 누적시킨다. 
-                  strName += (", " + jsonData_ANC[l]['Name']);
-                }
-              }
-              if (myArray.length == 0 || nANC_Count == 0)
-                continue;
-
-              fetchArray.push(myArray);
-            } 
-
-            console.log(fetchArray);
-
-          })
-        })
-        .catch((error) => console.log("error : ", error));
-
-
-//console.log(nANC_Count);
-          //console.log(fetchArray);
-
-          // let nFetchArrCnt = fetchArray.length;
-          // let nSchoolMemCnt = schoolMem.length;
-
-          // console.log(nFetchArrCnt);
-          // console.log(nANC_Count);
-
-          // for(let m = 0 ; m < nANC_Count ; m++)
-          // {
-          //   for(let n = 0;n<fetchArray.length;n++)
-          //   {
-          //     if (schoolMem[m].school != fetchArray[n][0])
-          //       contiue;
-
-          //     fetchArray[n].push(schoolMem[m].name);
-          //   }
-          // }
-
-          //console.log(fetchArray);
-
-          // schoolMem.forEach((element) => {
-            
-
-          // });
-          
-//*/
-      
-      // var arrLocationInfo = [
-      //   [
-      //     "카카오 스페이스닷원",
-      //     "https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/community/83cd8a98017a00001.png",    // 없애자
-      //     "제주특별자치도 제주시 첨단로 242",
-      //     "(우) 63309 (지번) 영평동 2181",
-      //     "https://www.kakaocorp.com/main",
-      //     33.450701,
-      //     126.570667,
-      //   ],
-      //   [
-      //     "전기차 배터리 산업화 센터",
-      //     "https://lh5.googleusercontent.com/p/AF1QipOm59iilr97JMp8vG6UCFjdzD0JaLO1a_og1UOm=w426-h240-k-no",
-      //     "제주특별자치도 제주시 첨단로 241",
-      //     "(우) 63309 (지번) 영평동 2181", // 안바꿈
-      //     "https://www.kakaocorp.com/main", // 안바꿈
-      //     33.450725,
-      //     126.57222,
-      //   ],
-      // ];
-      //console.log(fetchArray);
-
-      var i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
-
-
+      let nSchoolMemCnt = 0;
       var mapContainer = document.getElementById("map"), // 지도를 표시할 div
-        mapOption = {
-          center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-          level: 3, // 지도의 확대 레벨
-        };
-
+      mapOption = {
+        center: new kakao.maps.LatLng(37.1723, 127.0585),   // 오산 세교 지역
+        // center: new kakao.maps.LatLng(33.451475, 126.570528), // 제주도 지역
+        level: 7, // 지도의 확대 레벨
+      };
+      ///33.451475, 126.570528
       var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
-      fetchArray.forEach((element) => {
-        // console.log(element);
+      //var string_csv;
+      //CustomOverlay("카카오라카이구래쌌노", 33.450701, 126.570667);
+      let jsonData_ANC;
 
-        var latitude = element[5];
-        var longitude = element[6];
+      fetch("./addr.json")
+      .then(response => {
+        return response.json();
+      })
+      .then(jsondata => {
+        jsonData_ANC = jsondata;
+        //console.log(jsonData_ANC);
+      });
+        
+        //console.log(jsonData_ANC);
 
-        // 지도에 마커를 표시합니다
-        var marker = new kakao.maps.Marker({
-          map: map,
-          position: new kakao.maps.LatLng(latitude, longitude),
-        });
+      //var fetchedSchoolData = GetSchoolInfoByAPI(jsonData);           // 경기교육지원청
+      //console.log(fetchedSchoolData);
+      var xhr = new XMLHttpRequest();
+      var jsonResponse;
+      //var jsonData_E_M_H_ShoolInfo;
+      var api_key = "3c3198ef4877402c9361a69a6c47398b";
+      var url = 'https://openapi.gg.go.kr/MskulM'; /*URL*/
+      var queryParams = '?' + encodeURIComponent('Key') + '='+api_key; /*Service Key*/
+      queryParams += '&' + encodeURIComponent('type') + '=' + encodeURIComponent('json'); /**/
+      queryParams += '&' + encodeURIComponent('pIndex') + '=' + encodeURIComponent(1); /**/
+      queryParams += '&' + encodeURIComponent('pSize') + '=' + encodeURIComponent(1000); /**/
 
-        // 커스텀 오버레이가 표시될 위치입니다
-        var position = new kakao.maps.LatLng(latitude, longitude);
+      let fetchArray = new Array();      // 최종 주소록 배열
+      let myArray = new Array();         // 단일 행(학교당) 주소 정보
+      let schoolName = new Array();      // 학교 이름들
+      let studentName = null;//{"school": jsonData_ANC[0]['School'], "name": ""};       // 학교당 멤버(배열인자:학교명, 값:학생명 누적)
+      let strName = "";
+      let contents = "1";
+      
 
-        var content = CreateContentsTag(
-          i,
-          element[0], // "카카오 스페이스닷원",
-          element[1], // "https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/community/83cd8a98017a00001.png", //"https://cfile181.uf.daum.net/image/250649365602043421936D",
-          element[2], // "제주특별자치도 제주시 첨단로 242",
-          element[3], // "(우) 63309 (지번) 영평동 2181",
-          element[4], // "https://www.kakaocorp.com/main",
-          // latitude,
-          // longitude,
-          element[7]
-        );
+      // let nANC_Count = 0;      // 귀찮아서 콘솔로그 보기 편하라고 
+      let nSelSchoolANC_First;
+      let jsonData_E_M_H_ShoolInfo;
 
-        // 커스텀 오버레이를 생성합니다
-        var customOverlay = new kakao.maps.CustomOverlay({
-          content: content,
-          map: map,
-          position: marker.getPosition(),
-        });
+      fetch(url + queryParams)
+      .then((response) => {
+        return response.json();
+      })
+      .then((jsondata) => {
+        jsonData_E_M_H_ShoolInfo = jsondata;
+        //console.log(jsonData_E_M_H_ShoolInfo);
 
-        // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
-        kakao.maps.event.addListener(marker, "click", function () {
-          customOverlay.setMap(map);
-        });
+        // 1. 가져온 값의 갯수를 찍어본다.
+        let obj = jsonData_E_M_H_ShoolInfo['MskulM'][1]['row'];
+        let cntTotalSchool = obj.length;
+        //console.log(cntTotalSchool);
 
-        // 닫는 동작 하기 위해서
-        var getElementById = "info_close" + i;
-        document
-          .getElementById(getElementById)
-          .addEventListener("click", function (event) {
-            customOverlay.setMap(null);
+        let cntTotalANC = jsonData_ANC.length;
+        //console.log(cntTotalANC);
+
+        //// 미리 초기화 한다. 
+        //schoolMem = {"school": jsonData_ANC[0]['School']};
+
+        // 2. 갯수만큼 반복해서 찾아본다.
+        for(let j=0;j<cntTotalSchool;j++)
+        {
+          nSelSchoolANC_First = 0;
+          strName = "";
+          myArray.length = 0;
+          for(let l = 0 ; l < cntTotalANC ; l++)
+          {
+            // 일단 학교가 같지 않으면 다음 걸로 체크 
+            if (obj[j].FACLT_NM != jsonData_ANC[l]['School']) 
+              continue;
+            
+            let schoolMemCnt = schoolName.length;
+            //console.log(schoolMemCnt);
+            if (schoolMemCnt == 0)
+            {
+              // 1.1. 처음 들어왔으면 무조건 입력(학교배열 추가 포함) 
+              strName = jsonData_ANC[l]['Name'];
+              // nANC_Count++;
+
+              studentName = { "school": jsonData_ANC[l]['School'],  
+                              "image" : "",  
+                              "jibun" : obj[j].REFINE_LOTNO_ADDR,  
+                              "doro"  : obj[j].REFINE_ROADNM_ADDR,  
+                              "home"  : "#",  
+                              "lati"  : obj[j].REFINE_WGS84_LAT,  
+                              "longi" : obj[j].REFINE_WGS84_LOGT,  
+                              "name"  : jsonData_ANC[l]['Name']};
+
+              //학교배열 추가 포함
+              schoolName.push(studentName);
+            }
+            else
+            {
+              // 1.2. 처음이 아니면
+              // 1.2.1. 기존에 있는 것들을 돌면서 같은 것이 있는지 체크한다.
+              let bExist = false;
+              schoolName.forEach(element => {
+                if (element.school == jsonData_ANC[l]['School']) 
+                {
+                  // 1.2.2. 같은 것이 있으면 - 학생 이름을 추가한다. 
+                  element.name += (", " + jsonData_ANC[l]['Name']);
+                  bExist = true;
+                }
+              });
+
+              // 1.2.3. 새로운 것이면 - 학교 배열에 추가한다.  
+              if (bExist == false)
+              {
+                studentName = { "school": jsonData_ANC[l]['School'],  
+                                "image" : "",  
+                                "jibun" : obj[j].REFINE_LOTNO_ADDR,  
+                                "doro"  : obj[j].REFINE_ROADNM_ADDR,  
+                                "home"  : "#",  
+                                "lati"  : obj[j].REFINE_WGS84_LAT,  
+                                "longi" : obj[j].REFINE_WGS84_LOGT,  
+                                "name"  : jsonData_ANC[l]['Name']};
+                schoolName.push(studentName);
+              }
+            }
+          }
+        }
+        // fetchArray = schoolName;
+        let i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
+        nSchoolMemCnt = schoolName.length;
+
+        schoolName.forEach((element) => {
+          //console.log(i);
+          var latitude = element.lati;
+          var longitude = element.longi;
+
+          //console.log(latitude);
+          // 지도에 마커를 표시합니다
+          var marker = new kakao.maps.Marker({
+            map: map,
+            position: new kakao.maps.LatLng(latitude, longitude),
           });
 
-        i++;
+          // 커스텀 오버레이가 표시될 위치입니다
+          var position = new kakao.maps.LatLng(latitude, longitude);
+
+          contents = CreateContentsTag(
+            i,
+            element.school,   // "카카오 스페이스닷원",
+            element.image,    // "https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/community/83cd8a98017a00001.png", //"https://cfile181.uf.daum.net/image/250649365602043421936D",
+            element.doro,     // "제주특별자치도 제주시 첨단로 242",
+            element.jibun,    // "(우) 63309 (지번) 영평동 2181",
+            element.home,     // "https://www.kakaocorp.com/main",
+            // latitude,
+            // longitude,
+            element.name
+          );
+
+          //console.log(contents);
+
+          // 커스텀 오버레이를 생성합니다
+          var customOverlay = new kakao.maps.CustomOverlay({
+            content: contents,
+            map: map,
+            position: marker.getPosition()
+          });
+
+          // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+          kakao.maps.event.addListener(marker, "click", function () {
+            customOverlay.setMap(map);
+          });
+
+          // 닫는 동작 하기 위해서
+          //var strGetElementById = "info_close_" + i;
+
+          // document.getElementById(strGetElementById).addEventListener("click", function (event) {
+          //   customOverlay.setMap(null);
+          // });
+
+          let babo = dnmcFunc(i, customOverlay);
+
+          console.log(babo);
+
+          // 동적 함수 생성
+          // let dynamicFunc = createDynamicFunction("myFunction", "arg1, arg2");
+          //   dynamicFunc(i, customOverlay);
+          // i++;
+        });        
+                
       });
+
+      console.log(nSchoolMemCnt);
+      //fetchArray = schoolName;
+      // console.log(fetchArray);
+
+      // 함수 표현식을 사용하여 동적 함수를 생성
+      let dnmcFunc = function(argNames1, argNames2) {
+        return `
+        var strGetElementById = "info_close_" + ${argNames1};
+
+        document.getElementById(strGetElementById).addEventListener("click", function (event) {
+          ${argNames2}.setMap(null);
+        });
+
+        `;
+      };
+
+      // let i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
+
+      // fetchArray.forEach((element) => {
+      //   var latitude = element.lati;
+      //   var longitude = element.longi;
+
+      //   console.log(latitude);
+      //   // 지도에 마커를 표시합니다
+      //   var marker = new kakao.maps.Marker({
+      //     map: map,
+      //     position: new kakao.maps.LatLng(latitude, longitude),
+      //   });
+
+      //   // 커스텀 오버레이가 표시될 위치입니다
+      //   var position = new kakao.maps.LatLng(latitude, longitude);
+
+      //   contents = CreateContentsTag(
+      //     i,
+      //     element.school,   // "카카오 스페이스닷원",
+      //     element.image,    // "https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/community/83cd8a98017a00001.png", //"https://cfile181.uf.daum.net/image/250649365602043421936D",
+      //     element.doro,     // "제주특별자치도 제주시 첨단로 242",
+      //     element.jibun,    // "(우) 63309 (지번) 영평동 2181",
+      //     element.home,     // "https://www.kakaocorp.com/main",
+      //     // latitude,
+      //     // longitude,
+      //     element.name
+      //   );
+
+      //   console.log(contents);
+
+      //   // 커스텀 오버레이를 생성합니다
+      //   var customOverlay = new kakao.maps.CustomOverlay({
+      //     content: contents,
+      //     map: map,
+      //     position: marker.getPosition()
+      //   });
+
+      //   // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+      //   kakao.maps.event.addListener(marker, "click", function () {
+      //     customOverlay.setMap(map);
+      //   });
+
+      //   // 닫는 동작 하기 위해서
+      //   var getElementById = "info_close" + i;
+      //   document
+      //     .getElementById(getElementById)
+      //     .addEventListener("click", function (event) {
+      //       customOverlay.setMap(null);
+      //     });
+
+      //   i++;
+      // });
     </script>
   </body>
 </html>

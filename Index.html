@@ -71,6 +71,9 @@
       // 내가 해본거 말고 다른걸로 해보는것
       // 2023.03.08
       //=======================================================================================================================================================
+      // 지도에 표시된 마커 객체를 가지고 있을 배열입니다
+      let markers = [];
+      
       let arrAllSchoolData = [];
       let arrANC_Data = [];
       let arrFetch = [];
@@ -78,6 +81,7 @@
       // arrAllSchoolData와 arrANC_Data를 비교하여 일치하는 데이터를 찾아서 처리하는 함수
       function processData() {
         //const arrFetch = [];
+        arrFetch.length = 0;
 
         arrAllSchoolData.forEach(schoolData => {
           //const matchedSchoolData = arrANC_Data.find(ancData => ancData.School === schoolData.FACLT_NM);          // find로 했을 때 - 단수일경우      
@@ -112,19 +116,11 @@
 
         let i = 1; // 이런 경우 굳이 인덱스 일 필요(0으로 시작할 필요)가?
 
+        //.log(arrFetch);
         arrFetch.forEach(element => {
         var latitude = element.REFINE_WGS84_LAT;
         var longitude = element.REFINE_WGS84_LOGT;
 
-        //console.log(latitude);
-        // 지도에 마커를 표시합니다
-        var marker = new kakao.maps.Marker({
-          map: map,
-          position: new kakao.maps.LatLng(latitude, longitude),
-        });
-
-        // 커스텀 오버레이가 표시될 위치입니다
-        var position = new kakao.maps.LatLng(latitude, longitude);
 
         contents = CreateContentsTag(
           i,
@@ -136,7 +132,17 @@
           element.Name
         );
 
-        //console.log(contents);
+
+        // 커스텀 오버레이가 표시될 위치입니다
+        var position = new kakao.maps.LatLng(latitude, longitude);
+
+        // 지도에 마커를 표시합니다
+        var marker = new kakao.maps.Marker({
+          map: map,
+          position: position, //new kakao.maps.LatLng(latitude, longitude),
+        });
+
+        markers.push(marker);
 
         // 커스텀 오버레이를 생성합니다
         var customOverlay = new kakao.maps.CustomOverlay({
@@ -170,6 +176,8 @@
       queryParams += '&' + encodeURIComponent('pIndex') + '=' + encodeURIComponent(1); /**/
       queryParams += '&' + encodeURIComponent('pSize') + '=' + encodeURIComponent(1000); /**/   
       
+      // 비동기 방식이라 시점이 중요하다.
+      // 해당 블록을 벗어나면 의미 없어진다???
       fetch(url + queryParams)
         .then(response => response.json())
         .then(data => {
